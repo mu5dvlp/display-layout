@@ -4,7 +4,6 @@ import CoreGraphics
 class ArrangementViewController: NSViewController {
     private let arrangementView = ArrangementView()
     private let descriptionLabel = NSTextField(labelWithString: "ドラッグで配置を変更")
-    private let quitButton = NSButton(title: "終了", target: nil, action: nil)
 
     override func loadView() {
         view = NSView(frame: NSRect(x: 0, y: 0, width: 360, height: 300))
@@ -36,18 +35,6 @@ class ArrangementViewController: NSViewController {
         descriptionLabel.textColor = NSColor.secondaryLabelColor
         descriptionLabel.frame = NSRect(x: 12, y: 8, width: 200, height: 20)
         footer.addSubview(descriptionLabel)
-
-        quitButton.bezelStyle = .rounded
-        quitButton.font = NSFont.systemFont(ofSize: 13)
-        quitButton.target = self
-        quitButton.action = #selector(quit)
-        quitButton.frame = NSRect(x: view.frame.width - 72, y: 4, width: 60, height: 28)
-        quitButton.autoresizingMask = [.minXMargin]
-        footer.addSubview(quitButton)
-    }
-
-    @objc private func quit() {
-        NSApp.terminate(nil)
     }
 
     func reload() {
