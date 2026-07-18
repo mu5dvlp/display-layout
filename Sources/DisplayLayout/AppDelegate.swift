@@ -1,9 +1,10 @@
 import AppKit
 
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private var statusItem: NSStatusItem!
     private var popover: NSPopover!
     private var arrangementVC: ArrangementViewController!
+    private var clickMonitor: Any?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
@@ -25,6 +26,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         popover.contentViewController = arrangementVC
         popover.behavior = .transient
         popover.contentSize = NSSize(width: 360, height: 300)
+        popover.delegate = self
     }
 
     @objc private func handleButtonClick(_ sender: NSStatusBarButton) {
@@ -43,8 +45,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 arrangementVC.reload()
                 if let button = statusItem.button {
                     popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+                    if let monitor = clickMonitor {
+                        NSEvent.removeMonitor(monitor)
+                        clickMonitor = nil
+                    }
+                    clickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
+                        self?.popover.performClose(nil)
+                    }
                 }
             }
+        }
+    }
+
+    func popoverDidClose(_ notification: Notification) {
+        if let monitor = clickMonitor {
+            NSEvent.removeMonitor(monitor)
+            clickMonitor = nil
         }
     }
 }
