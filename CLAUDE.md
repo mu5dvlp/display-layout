@@ -20,10 +20,11 @@ swift build -c release # リリースビルド → .build/release/DisplayLayout
 scripts/install.sh
 ```
 
-リリースビルド → `~/Applications/DisplayLayout.app` として配置(最小限のInfo.plist、`LSUIElement`)→ LaunchAgent `~/Library/LaunchAgents/com.reimiogi.displaylayout.plist` を登録してログイン時に自動起動+即時起動、まで行う。コード更新後もこのスクリプトを再実行するだけでよい(既存インスタンスは停止して差し替える)。
+リリースビルド → `~/Applications/DisplayLayout.app` として配置(最小限のInfo.plist、`LSUIElement`)→ System Events 経由でログイン項目(hidden)に登録してログイン時に自動起動+即時起動、まで行う。コード更新後もこのスクリプトを再実行するだけでよい(既存インスタンスは停止して差し替える)。LaunchAgent ではなくログイン項目を使うのは、ad-hoc署名 + LaunchAgent の組み合わせで macOS が起動のたびに「バックグラウンドでのアクティビティ」通知を出すため。
 
-- 自動起動の解除: `launchctl bootout gui/$(id -u)/com.reimiogi.displaylayout && rm ~/Library/LaunchAgents/com.reimiogi.displaylayout.plist`(または「システム設定 > 一般 > ログイン項目」でオフ)
-- `KeepAlive` は false なので、アプリを手動で終了しても勝手に再起動しない(次回ログイン時にまた起動する)
+- 自動起動の解除: 「システム設定 > 一般 > ログイン項目」で DisplayLayout を削除、または `osascript -e 'tell application "System Events" to delete login item "DisplayLayout"'`
+- ログイン項目なので手動で終了しても勝手に再起動しない(次回ログイン時にまた起動する)
+- 初回実行時、ターミナルから System Events を制御する自動化の許可ダイアログが表示される場合がある
 
 ## アーキテクチャ
 
